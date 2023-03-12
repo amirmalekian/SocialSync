@@ -35,6 +35,7 @@ SocialSync is a social media platform built with the web technologies including 
 ![React](https://img.shields.io/badge/-React-05122A?style=for-the-badge&logo=react)&nbsp;
 ![TypeScript](https://img.shields.io/badge/-TypeScript-05122A?style=for-the-badge&logo=typescript)&nbsp;
 ![Sass](https://img.shields.io/badge/-Sass-05122A?style=for-the-badge&logo=sass)&nbsp;
+![ReactQuery](https://img.shields.io/badge/-reactquery-05122A?style=for-the-badge&logo=reactquery)&nbsp;
 ![Node.js](https://img.shields.io/badge/-Node.js-020f26?style=for-the-badge&logo=node.js)&nbsp;
 ![Express.js](https://img.shields.io/badge/-Express.js-020f26?style=for-the-badge&logo=express)&nbsp;
 ![MySQL](https://img.shields.io/badge/-MySQL-05122A?style=for-the-badge&logo=MySQL)&nbsp;
