@@ -114,7 +114,7 @@ Don't forget to give our project a star to show your support! We're excited to s
 ## 💬Contact Me
 
   <p>
-  if you need help, ask me. I would respond as soon as possible.
+  if you need help, ask me. I will try to answer as soon as possible.
   </p>
 
   <p>
