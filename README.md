@@ -27,7 +27,7 @@ SocialSync is a social media platform built with the web technologies including 
 [Contact Me](#contact-me)
 
 </p>
-<img src="client/public/banner.svg" width="700px"/>
+<img src="client/public/banner.png" width="700px"/>
 </div>
 
 ## 🔧Technologies
@@ -41,7 +41,12 @@ SocialSync is a social media platform built with the web technologies including 
 ![MySQL](https://img.shields.io/badge/-MySQL-05122A?style=for-the-badge&logo=MySQL)&nbsp;
 
 ## ✨Demo
-https://user-images.githubusercontent.com/79522638/224509076-2c687bb6-7fc9-4c48-aebe-be8e645143f4.mp4
+
+<p align="center"><b>Watch socialsync in action (external link) 👇</b></p>
+
+<a href="https://user-images.githubusercontent.com/79522638/224509076-2c687bb6-7fc9-4c48-aebe-be8e645143f4.mp4" target="_blank" title="Click to watch demo video">
+    <img src="client/public/video-thumbnail.png"/>
+  </a>
 
 ## 🔥Features
 
