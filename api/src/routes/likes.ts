@@ -1,10 +1,11 @@
 import express from "express";
 import { getLikes, addLike, deleteLike } from "../controllers/like";
+import { verifyUser } from "../middlewares/verifyToken";
 
 const router = express.Router();
 
 router.get("/", getLikes);
-router.post("/", addLike);
-router.delete("/", deleteLike);
+router.post("/", verifyUser, addLike);
+router.delete("/", verifyUser, deleteLike);
 
 export default router;

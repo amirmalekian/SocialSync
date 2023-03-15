@@ -4,6 +4,6 @@ import { getUser, updateUser } from "../controllers/user";
 const router = express.Router();
 
 router.get("/find/:userId", getUser);
-router.put("/", updateUser);
+router.put("/:userId", updateUser);
 
 export default router;
