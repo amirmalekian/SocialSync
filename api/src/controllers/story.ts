@@ -1,75 +1,44 @@
 import { db } from "../db";
-import jwt from "jsonwebtoken";
 import moment from "moment";
-import { Request, Response } from "express";
-import * as dotenv from "dotenv";
+import { Response } from "express";
+import { AuthRequest } from "../entities/auth.entity";
+import createError from "../utils/httpError";
+import response from "../utils/response";
 
-dotenv.config();
-
-export const getStories = (req: Request, res: Response) => {
-  const token = req.cookies.accessToken;
-  if (!token) return res.status(401).json("Not logged in!");
-
-  if (!process.env.JWT_KEY) {
-    return res.status(500).json("Missing JWT secret key");
-  }
-
-  jwt.verify(token, process.env.JWT_KEY || "defaultSecret", (err: any, userInfo: any) => {
-    if (err) return res.status(403).json("Token is not valid!");
-
-    const q = `SELECT s.*, name FROM stories AS s JOIN users AS u ON (u.id = s.userId)
+export const getStories = (req: AuthRequest, res: Response) => {
+  const userId = req.user?.id;
+  const q = `SELECT s.*, name FROM stories AS s JOIN users AS u ON (u.id = s.userId)
     LEFT JOIN relationships AS r ON (s.userId = r.followedUserId AND r.followerUserId= ?) LIMIT 4`;
 
-    db.query(q, [userInfo.id], (err, data) => {
-      if (err) return res.status(500).json(err);
-      return res.status(200).json(data);
-    });
+  db.query(q, [userId], (err, data) => {
+    if (err) return createError(500, err);
+    return response({ res, data, message: "Stories fetched successfully" });
   });
 };
 
-export const addStory = (req: Request, res: Response) => {
-  const token = req.cookies.accessToken;
-  if (!token) return res.status(401).json("Not logged in!");
+export const addStory = (req: AuthRequest, res: Response) => {
+  const userId = req.user?.id;
+  const q = "INSERT INTO stories(`img`, `createdAt`, `userId`) VALUES (?)";
+  const values = [
+    req.body.img,
+    moment(Date.now()).format("YYYY-MM-DD HH:mm:ss"),
+    userId,
+  ];
 
-  if (!process.env.JWT_KEY) {
-    return res.status(500).json("Missing JWT secret key");
-  }
-
-  jwt.verify(token, process.env.JWT_KEY || "defaultSecret", (err: any, userInfo: any) => {
-    if (err) return res.status(403).json("Token is not valid!");
-
-    const q = "INSERT INTO stories(`img`, `createdAt`, `userId`) VALUES (?)";
-    const values = [
-      req.body.img,
-      moment(Date.now()).format("YYYY-MM-DD HH:mm:ss"),
-      userInfo.id,
-    ];
-
-    db.query(q, [values], (err, data) => {
-      if (err) return res.status(500).json(err);
-      return res.status(200).json("Story has been created.");
-    });
+  db.query(q, [values], (err, data) => {
+    if (err) return createError(500, err);
+    return response({ res, data, message: "Story added successfully" });
   });
 };
 
-export const deleteStory = (req: Request, res: Response) => {
-  const token = req.cookies.accessToken;
-  if (!token) return res.status(401).json("Not logged in!");
+export const deleteStory = (req: AuthRequest, res: Response) => {
+  const userId = req.user?.id;
+  const q = "DELETE FROM stories WHERE `id`=? AND `userId` = ?";
 
-  if (!process.env.JWT_KEY) {
-    return res.status(500).json("Missing JWT secret key");
-  }
-
-  jwt.verify(token, process.env.JWT_KEY || "defaultSecret", (err: any, userInfo: any) => {
-    if (err) return res.status(403).json("Token is not valid!");
-
-    const q = "DELETE FROM stories WHERE `id`=? AND `userId` = ?";
-
-    db.query(q, [req.params.id, userInfo.id], (err, data) => {
-      if (err) return res.status(500).json(err);
-      if (data.affectedRows > 0)
-        return res.status(200).json("Story has been deleted.");
-      return res.status(403).json("You can delete only your story!");
-    });
+  db.query(q, [req.params.id, userId], (err, data) => {
+    if (err) return createError(500, err);
+    if (data.affectedRows > 0)
+      return response({ res, message: "Story deleted successfully" });
+    return createError(403, "You can only delete your own stories!");
   });
 };

@@ -1,10 +1,11 @@
 import express from "express";
 import { getStories, addStory, deleteStory } from "../controllers/story";
+import { verifyUser } from "../middlewares/verifyToken";
 
 const router = express.Router();
 
-router.get("/", getStories);
-router.post("/", addStory);
-router.delete("/:id", deleteStory);
+router.get("/", verifyUser, getStories);
+router.post("/", verifyUser, addStory);
+router.delete("/:id", verifyUser, deleteStory);
 
 export default router;

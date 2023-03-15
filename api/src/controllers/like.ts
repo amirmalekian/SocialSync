@@ -1,50 +1,39 @@
 import { Request, Response } from "express";
 import { db } from "../db";
-import jwt from "jsonwebtoken";
-import * as dotenv from "dotenv";
-
-dotenv.config();
+import createError from "../utils/httpError.js";
+import response from "../utils/response.js";
+import { AuthRequest } from "../entities/auth.entity";
 
 export const getLikes = (req: Request, res: Response) => {
   const query = `SELECT userId FROM likes WHERE postId = ?`;
 
   db.query(query, [req.query.postId], (err, data) => {
-    if (err) return res.status(500).json(err);
-    return res
-      .status(200)
-      .json(data.map((like: { userId: any }) => like.userId));
-  });
-};
-
-export const addLike = (req: Request, res: Response) => {
-  const token = req.cookies.accessToken;
-  if (!token) return res.status(401).json("Not logged in");
-
-  jwt.verify(token, process.env.JWT_KEY || "defaultSecret", (err: any, userInfo: any) => {
-    if (err) return res.status(403).json("Token is not valid!");
-
-    const query = "INSERT INTO likes (`userId`, `postId`) VALUES (?)";
-
-    const values = [userInfo.id, req.body.postId];
-    db.query(query, [values], (err, data) => {
-      if (err) return res.status(500).json(err);
-      return res.status(200).json("Post has been liked.");
+    if (err) return createError(500, err);
+    return response({
+      res,
+      data: data.map((like: { userId: any }) => like.userId),
+      message: "Likes fetched successfully",
     });
   });
 };
 
-export const deleteLike = (req: Request, res: Response) => {
-  const token = req.cookies.accessToken;
-  if (!token) return res.status(401).json("Not logged in");
+export const addLike = (req: AuthRequest, res: Response) => {
+  const userId = req.user?.id;
+  const query = "INSERT INTO likes (`userId`, `postId`) VALUES (?)";
 
-  jwt.verify(token, process.env.JWT_KEY || "defaultSecret", (err: any, userInfo: any) => {
-    if (err) return res.status(403).json("Token is not valid!");
+  const values = [userId, req.body.postId];
+  db.query(query, [values], (err, data) => {
+    if (err) return createError(500, err);
+    return response({ res, status: 201, message: "Post has been liked." });
+  });
+};
 
-    const query = "DELETE FROM likes WHERE `userId` = ? AND `postId` = ?";
+export const deleteLike = (req: AuthRequest, res: Response) => {
+  const userId = req.user?.id;
+  const query = "DELETE FROM likes WHERE `userId` = ? AND `postId` = ?";
 
-    db.query(query, [userInfo?.id, req.query?.postId], (err, data) => {
-      if (err) return res.status(500).json(err);
-      return res.status(200).json("Post has been disliked.");
-    });
+  db.query(query, [userId, req.query?.postId], (err, data) => {
+    if (err) return createError(500, err);
+    return response({ res, message: "Post has been unliked." });
   });
 };
